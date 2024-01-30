@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quiz Application</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      margin: 20px;
+    }
+
+    h1 {
+      color: #333;
+    }
+
+    #quiz-container {
+      width: 60%;
+      margin: 20px auto;
+      padding: 20px;
+      background-color: #f9f9f9;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+
+    #question {
+      font-size: 18px;
+      margin-bottom: 20px;
+    }
+
+    .options {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    button {
+      padding: 10px;
+      margin: 10px;
+      cursor: pointer;
+      background-color: #3498db;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      transition: background-color 0.3s ease;
+    }
+
+    button:hover {
+      background-color: #2980b9;
+    }
+
+    #score {
+      font-size: 16px;
+      margin-top: 20px;
+    }
+
+    #timer {
+      font-size: 16px;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Quiz Application</h1>
+  <div id="quiz-container">
+    <div id="question"></div>
+    <div class="options" id="options"></div>
+    <button id="nextBtn" style="display: none;">Next Question</button>
+    <div id="score"></div>
+    <div id="timer"></div>
+  </div>
+
+  <script>
+    const quizData = [
+      {
+        question: "What is the capital of France?",
+        options: ["Berlin", "Paris", "Madrid", "Rome"],
+        correctAnswer: "Paris"
+      },
+      {
+        question: "Which planet is known as the Red Planet?",
+        options: ["Venus", "Mars", "Jupiter", "Saturn"],
+        correctAnswer: "Mars"
+      },
+      {
+        question: "What is the largest mammal?",
+        options: ["Elephant", "Whale Shark", "Blue Whale", "Giraffe"],
+        correctAnswer: "Blue Whale"
+      }
+      // Add more questions as needed
+    ];
+
+    let currentQuestionIndex = 0;
+    let score = 0;
+    let timer;
+    const timerDuration = 15; // in seconds
+
+    const questionElement = document.getElementById('question');
+    const optionsElement = document.getElementById('options');
+    const nextBtn = document.getElementById('nextBtn');
+    const scoreElement = document.getElementById('score');
+    const timerElement = document.getElementById('timer');
+
+    function startTimer() {
+      let secondsLeft = timerDuration;
+      timer = setInterval(() => {
+        timerElement.textContent = `Time left: ${secondsLeft}s`;
+
+        if (secondsLeft === 0) {
+          handleNextQuestion();
+        }
+
+        secondsLeft--;
+      }, 1000);
+    }
+
+    function stopTimer() {
+      clearInterval(timer);
+    }
+
+    function displayQuestion() {
+      const currentQuestion = quizData[currentQuestionIndex];
+      questionElement.textContent = currentQuestion.question;
+
+      optionsElement.innerHTML = '';
+      currentQuestion.options.forEach((option, index) => {
+        const button = document.createElement('button');
+        button.textContent = option;
+        button.addEventListener('click', () => handleAnswerClick(option));
+        optionsElement.appendChild(button);
+      });
+
+      startTimer();
+    }
+
+    function handleAnswerClick(selectedOption) {
+      const currentQuestion = quizData[currentQuestionIndex];
+
+      if (selectedOption === currentQuestion.correctAnswer) {
+        score++;
+      }
+
+      stopTimer();
+      displayScore();
+      nextBtn.style.display = 'block';
+    }
+
+    function handleNextQuestion() {
+      currentQuestionIndex++;
+
+      if (currentQuestionIndex < quizData.length) {
+        nextBtn.style.display = 'none';
+        displayQuestion();
+      } else {
+        questionElement.textContent = 'Quiz completed!';
+        optionsElement.innerHTML = '';
+        nextBtn.style.display = 'none';
+        displayScore();
+        stopTimer();
+      }
+    }
+
+    function displayScore() {
+      scoreElement.textContent = `Score: ${score}/${quizData.length}`;
+    }
+
+    // Initial display
+    displayQuestion();
+
+    // Event listener for next button
+    nextBtn.addEventListener('click', handleNextQuestion);
+  </script>
+</body>
+</html>
